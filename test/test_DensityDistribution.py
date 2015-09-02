@@ -87,11 +87,10 @@ class test_DensityDistribution(unittest.TestCase):
 
         dd = DensityDistribution(values=values)
         result = dd.getTukeyBoxBoundaries()
-        print(result)
 
     #___________________________________________________________________________
     def test_generalizedGetMedian(self):
-        for i in range(2):
+        for i in range(10):
             values = [
                 ValueUncertainty.createRandom(-100.0, -5.0),
                 ValueUncertainty.createRandom(-500.0, -20.0),
@@ -102,7 +101,49 @@ class test_DensityDistribution(unittest.TestCase):
 
             dd = DensityDistribution(values=values)
             result = dd.getMedian()
-            print(result)
+
+    #___________________________________________________________________________
+    def test_compareAgainstGaussian(self):
+        dd = DensityDistribution(values=[ValueUncertainty()])
+        result = dd.compareAgainstGaussian(0.0, 1.0)
+        self.assertAlmostEqual(result, 1.0)
+
+    #___________________________________________________________________________
+    def test_compareAgainstGaussian2(self):
+        dd = DensityDistribution(values=[ValueUncertainty(uncertainty=0.5)])
+        result = dd.compareAgainstGaussian(0.0, 1.0)
+        self.assertLess(result, 0.7)
+
+    #___________________________________________________________________________
+    def test_compareAgainstGaussian3(self):
+        dd = DensityDistribution(values=[
+            ValueUncertainty(5.0),
+            ValueUncertainty(8.0),
+            ValueUncertainty(10.0, 2.0) ])
+        result = dd.compareAgainstGaussian(0.0, 1.0)
+        self.assertGreaterEqual(result, 0.0)
+        self.assertLess(result, 0.06)
+
+    #___________________________________________________________________________
+    def test_fromValuesOnly(self):
+        values = [11, 15, 3, 7, 2]
+        dd = DensityDistribution.fromValuesOnly(values)
+        self.assertAlmostEqual(dd.minimumValue.value, min(*values))
+        self.assertAlmostEqual(dd.maximumValue.value, max(*values))
+
+    #___________________________________________________________________________
+    def test_getAdaptiveRange(self):
+        values = [ValueUncertainty()]
+        dd = DensityDistribution(values=values)
+        result = dd.getAdaptiveRange(10.0)
+
+    #___________________________________________________________________________
+    def test_getAdaptiveRangeMulti(self):
+        values = [
+            ValueUncertainty(),
+            ValueUncertainty(2.0, 0.5) ]
+        dd = DensityDistribution(values=values)
+        result = dd.getAdaptiveRange(10.0)
 
 ################################################################################
 ################################################################################
