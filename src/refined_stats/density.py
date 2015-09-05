@@ -12,9 +12,10 @@ import collections
 
 import numpy as np
 from pyaid.list.ListUtils import ListUtils
+from pyaid.number.PositionValue2D import PositionValue2D
+from pyaid.number.ValueUncertainty import ValueUncertainty
 
 from refined_stats import numerics
-from refined_stats.ValueUncertainty import ValueUncertainty
 
 ################################################################################
 
@@ -77,6 +78,13 @@ class DensityDistribution(object):
 
     #===========================================================================
     #                                                             P U B L I C
+
+    #___________________________________________________________________________
+    def getNumericValues(self, raw =False):
+        out = []
+        for v in self.values:
+            out.append(v.raw if raw else v.value)
+        return out
 
     #___________________________________________________________________________
     def compareAgainstGaussian(self, gaussianMean, gaussianStd):
@@ -247,7 +255,9 @@ class DensityDistribution(object):
         return y
 
     #___________________________________________________________________________
-    def createDistribution(self, xValues =None, normalize =False):
+    def createDistribution(
+            self, xValues =None, normalize =False, asPoints =False
+    ):
         """ doc..."""
 
         if xValues is None:
@@ -255,7 +265,11 @@ class DensityDistribution(object):
 
         out = []
         for x in xValues:
-            out.append(self.getValueAt(x))
+            v = self.getValueAt(x)
+            if asPoints:
+                out.append(PositionValue2D(x=x, y=v))
+            else:
+                out.append(v)
 
         return out
 

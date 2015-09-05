@@ -10,7 +10,8 @@ import unittest
 
 import numpy as np
 
-from refined_stats.ValueUncertainty import ValueUncertainty
+from pyaid.number.ValueUncertainty import ValueUncertainty
+
 from refined_stats.density import DensityDistribution
 
 #_______________________________________________________________________________

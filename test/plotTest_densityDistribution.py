@@ -3,7 +3,8 @@ import numpy as np
 
 from plotly import plotly
 import plotly.graph_objs as plotlyGraph
-from refined_stats.ValueUncertainty import ValueUncertainty
+
+from pyaid.number.ValueUncertainty import ValueUncertainty
 
 from refined_stats.density import DensityDistribution
 
