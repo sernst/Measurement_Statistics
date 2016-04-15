@@ -20,8 +20,12 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
+
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'
@@ -32,5 +36,6 @@ setup(
         'six'
     ],
     test_suite='nose.collector',
-    tests_require=['nose']
+    tests_require=['nose'],
+    keywords='measurements statistics error propagation',
 )
