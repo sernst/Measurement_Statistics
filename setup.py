@@ -11,7 +11,7 @@ setup(
     description=
             'Measurement statistics with uncertainties and error propagation',
     long_description=read_me(),
-    url='https://github.com/sernst/RefinedStatistics',
+    url='https://github.com/sernst/Measurement_Statistics',
     author='Scott Ernst',
     author_email='swernst@gmail.com',
     license='MIT',

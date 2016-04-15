@@ -1,16 +1,23 @@
-# Measurement Statistics
+Measurement Statistics
+======================
 
-A statistical package for measurement and population statistics that 
+A statistical package for measurement and population statistics that
 incorporate measurement uncertainties and error propagation.
 
-## Error Propagation
+Installation::
 
-Say, for example, that we have measured a rectangle to be 11 +/- 0.4 centimeters 
-wide and 8 +/- 0.3 centimeters long. We can then calculate the area with 
+    pip install measurement_stats
+
+
+Error Propagation
+-----------------
+
+Say, for example, that we have measured a rectangle to be 11 +/- 0.4 centimeters
+wide and 8 +/- 0.3 centimeters long. We can then calculate the area with
 uncertainty as follows::
 
     from measurement_stats import value
-    
+
     width = value.ValueUncertainty(11, 0.4)
     length = value.ValueUncertainty(8, 0.3)
 
@@ -34,5 +41,5 @@ gravity, with propagated uncertainty, can be determined as follows::
 
     print('Acceleration Due To Gravity:', g.label)
     # $ Acceleration Due To Gravity: 979 +/- 4
-    
+
 
