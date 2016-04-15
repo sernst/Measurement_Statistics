@@ -1,4 +1,5 @@
 from setuptools import setup
+from setuptools import find_packages
 
 
 def read_me():
@@ -7,7 +8,7 @@ def read_me():
 
 setup(
     name='measurement_stats',
-    version='0.1',
+    version='0.1.1',
     description=
             'Measurement statistics with uncertainties and error propagation',
     long_description=read_me(),
@@ -15,7 +16,7 @@ setup(
     author='Scott Ernst',
     author_email='swernst@gmail.com',
     license='MIT',
-    packages=['measurement_stats'],
+    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
