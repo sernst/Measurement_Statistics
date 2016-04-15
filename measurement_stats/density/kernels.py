@@ -5,10 +5,12 @@ from __future__ import unicode_literals
 
 import math
 
+
 def gaussian(x, measurement, max_sigma = 10.0):
-    """ A Gaussian kernel function that returns a probability density value at
-        the given x position where the Gaussian is defined by the center (mean)
-        and width (standard deviation)
+    """
+    A Gaussian kernel function that returns a probability density value at
+    the given x position where the Gaussian is defined by the center (mean)
+    and width (standard deviation)
 
     :param x: Position where the kernel should be evaluated to return the
         probability density value

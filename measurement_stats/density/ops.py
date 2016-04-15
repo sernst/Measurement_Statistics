@@ -10,11 +10,13 @@ import numpy as np
 
 from measurement_stats import value
 
-def percentile(distribution, target =0.5, tolerance = 1e-6):
-    """ Computes the position along the measurement axis where the distribution
-        reaches the given target percentile. The computation is carried out
-        using a numerical integrator, which requires a tolerance where it can
-        determine success and return
+
+def percentile(distribution, target=0.5, tolerance=1e-6):
+    """
+    Computes the position along the measurement axis where the distribution
+    reaches the given target percentile. The computation is carried out
+    using a numerical integrator, which requires a tolerance where it can
+    determine success and return
 
     :param distribution: The distribution for which the percentile should be
         calculated.
@@ -49,30 +51,30 @@ def percentile(distribution, target =0.5, tolerance = 1e-6):
         dx = xn - x
         y = distribution.probability_at(x)
         yn = distribution.probability_at(xn)
-        newArea = area + dx * (y + 0.5 * abs(yn - y))
+        new_area = area + dx * (y + 0.5 * abs(yn - y))
 
-        if value.equivalent(newArea, target, tolerance):
+        if value.equivalent(new_area, target, tolerance):
             return dict(
                 x=xn,
                 y=yn,
-                target=newArea
+                target=new_area
             )
 
-        elif newArea > target:
+        elif new_area > target:
             break
         else:
-            area = newArea
+            area = new_area
 
     ratio = 0.5
-    ratioMin = 0.0
-    ratioMax = 1.0
+    ratio_min = 0.0
+    ratio_max = 1.0
 
     for i in range(10000):
-        dxPiece = ratio * dx
-        xn = x + dxPiece
+        dx_piece = ratio * dx
+        xn = x + dx_piece
         yn = distribution.probability_at(xn)
-        areaExtension = dxPiece * (y + 0.5 * abs(yn - y))
-        test = area + areaExtension
+        area_extension = dx_piece * (y + 0.5 * abs(yn - y))
+        test = area + area_extension
 
         if value.equivalent(test, target, tolerance):
             return dict(
@@ -82,20 +84,22 @@ def percentile(distribution, target =0.5, tolerance = 1e-6):
             )
 
         if test < target:
-             ratioMin = max(ratioMin, ratio)
+            ratio_min = max(ratio_min, ratio)
         elif test > target:
-             ratioMax = min(ratioMax, ratio)
+            ratio_max = min(ratio_max, ratio)
 
-        ratio *= (target - area) / areaExtension
-        if ratioMax <= ratio <= ratioMin:
-            ratio = ratioMin + 0.5*(ratioMax - ratioMin)
+        ratio *= (target - area) / area_extension
+        if ratio_max <= ratio <= ratio_min:
+            ratio = ratio_min + 0.5*(ratio_max - ratio_min)
 
     raise ValueError('Unable to find percentile value')
 
-def uniform_range(distribution, max_sigma, num_points = 0, delta = 0):
-    """ Creates a uniform range of values along the measurement (x) axis for
-        the distribution within the boundaries created by the maximum sigma
-        argument.
+
+def uniform_range(distribution, max_sigma, num_points=0, delta=0):
+    """
+    Creates a uniform range of values along the measurement (x) axis for
+    the distribution within the boundaries created by the maximum sigma
+    argument.
 
     :param distribution: The distribution for which the range should be created
     :type: refined_stats.density.Distribution
@@ -122,25 +126,27 @@ def uniform_range(distribution, max_sigma, num_points = 0, delta = 0):
     :rtype: list
     """
 
-    minVal = distribution.minimum_boundary(max_sigma)
-    maxVal = distribution.maximum_boundary(max_sigma)
+    min_val = distribution.minimum_boundary(max_sigma)
+    max_val = distribution.maximum_boundary(max_sigma)
 
     if not num_points:
         if delta:
-            num_points = round((maxVal - minVal) / delta)
+            num_points = round((max_val - min_val) / delta)
         else:
             num_points = 1024
 
-    return np.linspace(minVal, maxVal, int(num_points))
+    return np.linspace(min_val, max_val, int(num_points))
 
-def adaptive_range(distribution, max_sigma, max_delta = None):
-    """ Creates a dynamically assigned range of values along the measurement
-        (x) axis for the distribution within the boundaries created by the
-        maximum sigma argument.
 
-        The values returned are not spaced equally. Instead they are spaced
-        based on the gradient of the distribution, where larger gradients
-        receive a higher density of values and smaller gradients less.
+def adaptive_range(distribution, max_sigma, max_delta=None):
+    """
+    Creates a dynamically assigned range of values along the measurement
+    (x) axis for the distribution within the boundaries created by the
+    maximum sigma argument.
+
+    The values returned are not spaced equally. Instead they are spaced
+    based on the gradient of the distribution, where larger gradients
+    receive a higher density of values and smaller gradients less.
 
     :param distribution: The distribution for which the range should be created
     :type: refined_stats.density.Distribution
@@ -171,9 +177,9 @@ def adaptive_range(distribution, max_sigma, max_delta = None):
     measurements = []
     for m in distribution.measurements:
         measurements.append({
-            'min':m.value - 6.0*m.uncertainty,
-            'max':m.value + 6.0*m.uncertainty,
-            'value':m
+            'min': m.value - 6.0*m.uncertainty,
+            'max': m.value + 6.0*m.uncertainty,
+            'value': m
         })
 
     measurements.sort(key=itemgetter('min'))
@@ -181,15 +187,15 @@ def adaptive_range(distribution, max_sigma, max_delta = None):
     out = [min_val]
     while out[-1] < max_val:
         delta = min(max_delta, max_val - out[-1])
-        xNext = out[-1] + delta
+        x_next = out[-1] + delta
 
         index = 0
         while len(measurements) and index < len(measurements):
             m = measurements[index]
             x = out[-1]
-            xNext = x + delta
+            x_next = x + delta
 
-            if xNext <= m['min']:
+            if x_next <= m['min']:
                 # BEFORE KERNEL: If the new x value is less than the lower
                 # bound of the kernel value, use that delta value.
                 break
@@ -201,29 +207,33 @@ def adaptive_range(distribution, max_sigma, max_delta = None):
                 measurements.pop(0)
                 continue
 
-
             if m['min'] <= x <= m['max']:
                 # INSIDE KERNEL: If x is inside a kernel, use that kernel's
                 # delta if it is smaller than the delta already set.
                 delta = min(delta, 0.25*m['value'].uncertainty)
 
-            elif x <= m['min'] and m['max'] <= xNext:
+            elif x <= m['min'] and m['max'] <= x_next:
                 # OVER KERNEL: If x and x+dx wrap around the kernel, use
                 # a delta that puts the new x value at the lower edge of
                 # the kernel.
                 delta = min(delta, m['min'] - x)
 
             index += 1
-            xNext = x + delta
+            x_next = x + delta
 
-        out.append(xNext)
+        out.append(x_next)
 
     return out
 
-def population(distribution, count = 2048):
-    """ Creates a list of numerical values (no uncertainty) of the specified
-        length that are representative of the distribution for use in less
-        robust statistical operations.
+
+def population(distribution, count=2048):
+    """
+    Creates a list of numerical values (no uncertainty) of the specified
+    length that are representative of the distribution for use in less robust
+    statistical operations.
+
+    :param distribution:
+        The distribution instance on which to create a population
 
     :param count: The number of numerical values to include in the returned
         population list.
@@ -254,12 +264,14 @@ def population(distribution, count = 2048):
         x = min(x_max, x + delta)
     return out
 
+
 def overlap(distribution, comparison):
-    """ Returns the disparity in overlap between the two distributions.
-        A value of 1.0 indicates that they overlap perfectly, while a value of
-        0.0 indicates that there is no overlap between them. This approach can
-        be useful in determining whether or not a distribution can be
-        characterized by another one.
+    """
+    Returns the disparity in overlap between the two distributions.
+    A value of 1.0 indicates that they overlap perfectly, while a value of
+    0.0 indicates that there is no overlap between them. This approach can
+    be useful in determining whether or not a distribution can be
+    characterized by another one.
 
     :param distribution: A distribution for overlap comparison
     :type: refined_stats.density.Distribution

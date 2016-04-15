@@ -7,8 +7,9 @@ import math
 
 from measurement_stats import value
 
+
 class Angle(object):
-    """A class for..."""
+    """A type for representing angular measurements with uncertainties"""
 
     def __init__(self, **kwargs):
         self._angle = 0.0
@@ -35,6 +36,7 @@ class Angle(object):
     @property
     def uncertainty(self):
         return self._unc
+
     @uncertainty.setter
     def uncertainty(self, v):
         self._unc = v
@@ -42,6 +44,7 @@ class Angle(object):
     @property
     def uncertainty_degrees(self):
         return math.degrees(self._unc)
+
     @uncertainty_degrees.setter
     def uncertainty_degrees(self, v):
         self._unc = math.radians(v)
@@ -49,6 +52,7 @@ class Angle(object):
     @property
     def radians(self):
         return self._angle
+
     @radians.setter
     def radians(self, v):
         self._angle = float(v)
@@ -56,6 +60,7 @@ class Angle(object):
     @property
     def degrees(self):
         return math.degrees(self._angle)
+
     @degrees.setter
     def degrees(self, v):
         self._angle = math.radians(float(v))
@@ -69,8 +74,9 @@ class Angle(object):
         return self.__class__(radians=self._angle, uncertainty=self._unc)
 
     def constrain_to_revolution(self):
-        """ Constrains the angle to within the bounds [0, 360] by removing
-            revolutions.
+        """
+        Constrains the angle to within the bounds [0, 360] by removing
+        revolutions.
         """
 
         radians = self.radians
@@ -81,8 +87,9 @@ class Angle(object):
         return self
 
     def difference_between(self, angle):
-        """ Returns a new Angle instance that is the smallest difference
-            between this angle the one specified in the arguments.
+        """
+        Returns a new Angle instance that is the smallest difference between
+        this angle the one specified in the arguments.
 
         :param angle:
         :return:

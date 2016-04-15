@@ -8,7 +8,8 @@ import random
 
 from measurement_stats import angle
 
-class test_angle(unittest.TestCase):
+
+class TestAngle(unittest.TestCase):
 
     def test_degrees(self):
         """ doc... """
@@ -59,10 +60,8 @@ class test_angle(unittest.TestCase):
             b.constrain_to_revolution()
             self.assertLessEqual(abs(a.difference_between(b).degrees), 180.0)
 
-################################################################################
-################################################################################
 
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_angle)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestAngle)
     unittest.TextTestRunner(verbosity=2).run(suite)
 

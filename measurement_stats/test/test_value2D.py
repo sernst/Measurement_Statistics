@@ -11,7 +11,11 @@ from measurement_stats import angle
 from measurement_stats import value
 from measurement_stats import value2D
 
-class test_value2D(unittest.TestCase):
+HALF_SQRT_2 = 0.5 * math.sqrt(2.0)
+HALF_SQRT_3 = 0.5 * math.sqrt(3.0)
+
+
+class TestValue2D(unittest.TestCase):
 
     def test_angleBetween(self):
         p1 = value2D.Point2D(
@@ -25,9 +29,6 @@ class test_value2D(unittest.TestCase):
         self.assertAlmostEquals(a.degrees, 90.0, 1)
 
     def test_rotate(self):
-        HALF_SQRT_2 = 0.5*math.sqrt(2.0)
-        HALF_SQRT_3 = 0.5*math.sqrt(3.0)
-
         tests = [
             (90.0, 0.0, 1.0), (-90.0, 0.0, -1.0),
             (180.0, -1.0, 0.0), (-180.0, -1.0, 0.0),
@@ -50,11 +51,9 @@ class test_value2D(unittest.TestCase):
             self.assertAlmostEqual(p.x.raw, radius * test[1], 2)
             self.assertAlmostEqual(p.y.raw, radius * test[2], 2)
 
-################################################################################
-################################################################################
 
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_value2D)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestValue2D)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

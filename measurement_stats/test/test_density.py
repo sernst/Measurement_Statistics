@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -11,37 +10,39 @@ import numpy as np
 from measurement_stats import density
 from measurement_stats import value
 
-def getAreaUnderCurve(xValues, yValues):
+
+def get_area_under_curve(x_values, y_values):
     area = 0.0
-    for i in range(len(xValues) - 1):
-        dx = xValues[i + 1] - xValues[i]
-        area += dx*yValues[i]
+    for i in range(len(x_values) - 1):
+        dx = x_values[i + 1] - x_values[i]
+        area += dx * y_values[i]
     return area
 
-class test_density(unittest.TestCase):
+
+class TestDensity(unittest.TestCase):
 
     def test_singleDensity(self):
         """ A single measurement value should have a total probability of
             unity
         """
 
-        xValues = np.linspace(-10.0, 10.0, 100)
+        x_values = np.linspace(-10.0, 10.0, 100)
         measurements = [value.ValueUncertainty()]
 
         dist = density.Distribution(measurements=measurements)
 
-        area = getAreaUnderCurve(xValues, dist.probabilities_at(xValues))
+        area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
 
     def test_doubleDensityOverlap(self):
         """ Two overlapping measurement values should have a total probability
             of unity
         """
-        xValues = np.linspace(-10.0, 10.0, 100)
+        x_values = np.linspace(-10.0, 10.0, 100)
         measurements = [value.ValueUncertainty(), value.ValueUncertainty()]
 
         dist = density.Distribution(measurements=measurements)
-        area = getAreaUnderCurve(xValues, dist.probabilities_at(xValues))
+        area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
 
     def test_doubleDensityOffset(self):
@@ -49,14 +50,14 @@ class test_density(unittest.TestCase):
             still result in a total probability of unity
         """
 
-        xValues = np.linspace(-10.0, 25.0, 100)
+        x_values = np.linspace(-10.0, 25.0, 100)
         measurements = [
             value.ValueUncertainty(),
             value.ValueUncertainty(2.0, 2.0)
         ]
 
         dist = density.Distribution(measurements=measurements)
-        area = getAreaUnderCurve(xValues, dist.probabilities_at(xValues))
+        area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
 
     def test_singleDensityMedian(self):
@@ -65,7 +66,7 @@ class test_density(unittest.TestCase):
         """
 
         for i in range(10):
-            measurements = [value.ValueUncertainty.createRandom(-100, 100)]
+            measurements = [value.ValueUncertainty.create_random(-100, 100)]
 
             dist = density.Distribution(measurements=measurements)
             median = density.ops.percentile(dist)
@@ -85,12 +86,12 @@ class test_density(unittest.TestCase):
     def test_generalizedGetMedian(self):
         for i in range(10):
             measurements = [
-                value.ValueUncertainty.createRandom(-100.0, -5.0),
-                value.ValueUncertainty.createRandom(-500.0, -20.0),
-                value.ValueUncertainty.createRandom(-100.0, -50.0),
-                value.ValueUncertainty.createRandom(),
-                value.ValueUncertainty.createRandom(),
-                value.ValueUncertainty.createRandom()
+                value.ValueUncertainty.create_random(-100.0, -5.0),
+                value.ValueUncertainty.create_random(-500.0, -20.0),
+                value.ValueUncertainty.create_random(-100.0, -50.0),
+                value.ValueUncertainty.create_random(),
+                value.ValueUncertainty.create_random(),
+                value.ValueUncertainty.create_random()
             ]
 
             dist = density.Distribution(measurements=measurements)
@@ -136,11 +137,9 @@ class test_density(unittest.TestCase):
         dist = density.Distribution(measurements=measurements)
         result = density.ops.adaptive_range(dist, 10.0)
 
-################################################################################
-################################################################################
 
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_density)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestDensity)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

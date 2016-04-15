@@ -11,7 +11,8 @@ from measurement_stats import ops
 from measurement_stats import mean
 from measurement_stats import value
 
-class test_basics(unittest.TestCase):
+
+class TestBasics(unittest.TestCase):
 
     def test_isNumber(self):
         """test_isNumber doc..."""
@@ -104,11 +105,9 @@ class test_basics(unittest.TestCase):
         self.assertEqual(result.value, 11.4, 'Value Match')
         self.assertEqual(result.uncertainty, 0.7, 'Value Match')
 
-################################################################################
-################################################################################
 
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_basics)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestBasics)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

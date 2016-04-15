@@ -8,10 +8,26 @@ import unittest
 
 from measurement_stats import value
 
-class test_value(unittest.TestCase):
+
+class TestValue(unittest.TestCase):
+
+    def test_simple_arithmetic(self):
+        """
+        A very simple error propagation test example
+        """
+
+        width = value.ValueUncertainty(11, 0.4)
+        length = value.ValueUncertainty(8, 0.3)
+
+        area = length * width
+
+        print(area.label)
+        self.assertAlmostEqual(area.value, 88)
+        self.assertAlmostEqual(area.uncertainty, 5)
 
     def test_arithmetic(self):
-        """ This test is from a problem in Taylor's Error Analysis 3.9 (p. 68)
+        """
+        This test is from a problem in Taylor's Error Analysis 3.9 (p. 68)
         """
         l = value.ValueUncertainty(92.95, 0.1)
         T = value.ValueUncertainty(1.936, 0.004)
@@ -23,8 +39,9 @@ class test_value(unittest.TestCase):
         self.assertAlmostEqual(g.uncertainty, 4.0)
 
     def test_roundingIssue(self):
-        """ There was a rounding issue that I wanted to check to see was
-            correct. This confirms that as strange as it looks, it is correct.
+        """
+        There was a rounding issue that I wanted to check to see was correct.
+        This confirms that as strange as it looks, it is correct.
         """
 
         x1 = value.ValueUncertainty(1.3125, 0.010050373127401788)
@@ -42,11 +59,9 @@ class test_value(unittest.TestCase):
 
         print(result)
 
-################################################################################
-################################################################################
 
 if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_value)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestValue)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

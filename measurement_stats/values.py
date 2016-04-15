@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 
 import math
 
-def unzip(values, raw = False):
+
+def unzip(values, raw=False):
     """
 
     :param values:
@@ -27,6 +28,7 @@ def unzip(values, raw = False):
         uncs.append(v.raw_uncertainty if raw else v.uncertainty)
 
     return vals, uncs
+
 
 def deviations(expected, values):
     """

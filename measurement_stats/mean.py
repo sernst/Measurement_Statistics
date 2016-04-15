@@ -8,6 +8,7 @@ import numpy as np
 
 from measurement_stats import value
 
+
 def unweighted(*values):
     """
 
@@ -29,12 +30,13 @@ def unweighted(*values):
             uncertainty=float(np.std(values))
     )
 
+
 def weighted(*values):
     """
-        Calculates the uncertainty weighted average of the provided values,
-        where each value is a ValueUncertainty instance. For mathematical
-        formulation of the weighted average see "An Introduction to Error
-        Analysis, 2nd Edition" by John R. Taylor, Chapter 7.2.
+    Calculates the uncertainty weighted average of the provided values,
+    where each value is a ValueUncertainty instance. For mathematical
+    formulation of the weighted average see "An Introduction to Error
+    Analysis, 2nd Edition" by John R. Taylor, Chapter 7.2.
 
     :param values:
     :return:
@@ -60,17 +62,17 @@ def weighted(*values):
 
     return value.ValueUncertainty(value=ave, uncertainty=unc)
 
+
 def weighted_mean_and_deviation(*values):
     """
-        Returns the mean and standard deviation of a weighted set of values.
-        For further info see:
-            http://stats.stackexchange.com/questions/6534/
-                how-do-i-calculate-a-weighted-standard-deviation-in-excel
+    Returns the mean and standard deviation of a weighted set of values.
+    For further info see:
+        http://stats.stackexchange.com/questions/6534/
+            how-do-i-calculate-a-weighted-standard-deviation-in-excel
 
     :param values:
     :return:
     """
-
 
     if not values:
         return value.ValueUncertainty()

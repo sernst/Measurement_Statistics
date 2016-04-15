@@ -9,10 +9,11 @@ from measurement_stats import angle
 from measurement_stats import ops
 from measurement_stats import value
 
+
 class Point2D(object):
     """A class for..."""
 
-    def __init__(self, x = None, y = None):
+    def __init__(self, x=None, y=None):
         if x is None:
             x = value.ValueUncertainty()
         if y is None:
@@ -34,7 +35,7 @@ class Point2D(object):
     def nonzero(self):
         return self.x.value != 0.0 or self.x.value != 0.0
 
-    def copyFrom(self, source):
+    def copy_from(self, source):
         """
 
         :param source:
@@ -57,7 +58,7 @@ class Point2D(object):
         self.x.value = -self.x.value
         self.y.value = -self.y.value
 
-    def rotate(self, rotation_angle, origin = None):
+    def rotate(self, rotation_angle, origin=None):
         """ Rotates the position value by the specified angle using a standard
             2D rotation matrix formulation. If an origin Position2D instance is
             not specified the rotation will occur around the origin. Also, if
@@ -97,8 +98,8 @@ class Point2D(object):
         :return:
         """
 
-        xDelta   = self.x - point.x
-        yDelta   = self.y - point.y
+        xDelta = self.x - point.x
+        yDelta = self.y - point.y
         return (xDelta*xDelta + yDelta*yDelta) ** 0.5
 
     def serialize(self):
@@ -126,10 +127,10 @@ class Point2D(object):
         :return:
         """
 
-        myLength = self.length
-        posLength = point.length
+        my_length = self.length
+        pos_length = point.length
         numerator = self.x*point.x + self.y*point.y
-        denominator = myLength * posLength
+        denominator = my_length * pos_length
 
         if value.equivalent(denominator.value, 0.0, 1e-6):
             return angle.Angle(radians=0.0, uncertainty=0.5*math.pi)

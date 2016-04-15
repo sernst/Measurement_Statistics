@@ -11,13 +11,15 @@ from measurement_stats import value
 from measurement_stats import value2D
 from measurement_stats.density import kernels
 
+
 def kernel_uncertainty_estimate(entries):
-    """ Creates an estimate for the uncertainty to apply to each value base
-        on the separation of the entries that make up the distribution. This is
-        used in cases where no uncertainty was described in the measurements,
-        but the measurement population is fairly large, so that the
-        quantization of the measurements themselves indicate the uncertainty
-        implicitly.
+    """
+    Creates an estimate for the uncertainty to apply to each value base
+    on the separation of the entries that make up the distribution. This is
+    used in cases where no uncertainty was described in the measurements,
+    but the measurement population is fairly large, so that the
+    quantization of the measurements themselves indicate the uncertainty
+    implicitly.
 
     :param entries: An iterable containing entries for the distribution
     :type: iterable
@@ -36,16 +38,18 @@ def kernel_uncertainty_estimate(entries):
 
     return max(0.00001, 0.5*float(np.median(deltas)))
 
+
 def create_distribution(measurements, uncertainties = None, kernel = None):
-    """ Creates a distribution according to the specified arguments.
+    """
+    Creates a distribution according to the specified arguments.
 
-        If the measurements argument is an iterable of ValueUncertainty
-        instances, they are used directly to create the distribution and any
-        value for the uncertainties argument is ignored.
+    If the measurements argument is an iterable of ValueUncertainty
+    instances, they are used directly to create the distribution and any
+    value for the uncertainties argument is ignored.
 
-        If the measurements argument is an iterable of numeric types then
-        they are converted into ValueUncertainties using the uncertainties
-        argument.
+    If the measurements argument is an iterable of numeric types then
+    they are converted into ValueUncertainties using the uncertainties
+    argument.
 
     :param kernel: (optional) A function with the signature
         kernel(x, measurement) that returns the probability for the given
@@ -115,19 +119,21 @@ def create_distribution(measurements, uncertainties = None, kernel = None):
             ]
     )
 
+
 class Distribution(object):
-    """ Data structure representing a probability density distribution
-        for a given set of measurements and a kernel function that defines
-        how the probability for each measurement is distributed along the
-        measurement (i.e. x) axis.
+    """
+    Data structure representing a probability density distribution
+    for a given set of measurements and a kernel function that defines
+    how the probability for each measurement is distributed along the
+    measurement (i.e. x) axis.
 
-        Each measurement entry is assumed to account for a single measurement,
-        so that it accounts for an equal amount of probability within the
-        distribution.
+    Each measurement entry is assumed to account for a single measurement,
+    so that it accounts for an equal amount of probability within the
+    distribution.
 
-        A measurement is a ValueUncertainty instance, which resolves using the
-        kernel function, to its own probability distribution along the
-        measurement axis (i.e. the x axis).
+    A measurement is a ValueUncertainty instance, which resolves using the
+    kernel function, to its own probability distribution along the
+    measurement axis (i.e. the x axis).
     """
 
     MEDIAN_DATA_NT = collections.namedtuple(
@@ -140,8 +146,9 @@ class Distribution(object):
         self.measurements = measurements if measurements is not None else []
 
     def probability_at(self, x):
-        """ Returns the probability of the distribution at the given position
-            on the measurement axis (x)
+        """
+        Returns the probability of the distribution at the given position
+        on the measurement axis (x)
 
         :param x: The position along the measurement axis where the probability
             will be calculated
@@ -157,8 +164,9 @@ class Distribution(object):
         ) / len(self.measurements)
 
     def probabilities_at(self, x_values):
-        """ The probabilities for the distribution at the given locations on
-            the measurement (x) axis
+        """
+        The probabilities for the distribution at the given locations on
+        the measurement (x) axis
 
         :param x_values: An iterable containing the values where the
             probability of the distribution should be calculated
@@ -172,7 +180,8 @@ class Distribution(object):
         return [self.probability_at(x) for x in x_values]
 
     def minimum_value(self):
-        """ The lowest measurement value in the distribution
+        """
+        The lowest measurement value in the distribution
 
         :return: Minimum measurement value in the distribution
         :rtype: value.ValueUncertainty
@@ -191,7 +200,8 @@ class Distribution(object):
         return item
 
     def maximum_value(self):
-        """ The highest measurement value in the distribution
+        """
+        The highest measurement value in the distribution
 
         :return: Maximum measurement value in the distribution
         :rtype: value.ValueUncertainty
@@ -210,7 +220,8 @@ class Distribution(object):
         return point
 
     def naked_measurement_values(self, raw = False):
-        """ Returns a list of naked numbers, i.e. without uncertainty values.
+        """
+        Returns a list of naked numbers, i.e. without uncertainty values.
 
         :param raw: (optional) Specifies whether to return raw (not truncated)
             measurement values, or values that have been truncated by their
@@ -224,18 +235,19 @@ class Distribution(object):
         return [(m.raw if raw else m.value) for m in self.measurements]
 
     def minimum_boundary(self, sigma_threshold):
-        """ The boundary is defined as the value on the measurement (x)
-            axis where all measurements are above by at least the specified
-            sigma deviation tolerance.
+        """
+        The boundary is defined as the value on the measurement (x)
+        axis where all measurements are above by at least the specified
+        sigma deviation tolerance.
 
-            For example, if we have a distribution with two measurements:
-                * m1 = 12 +/- 2
-                * m2 = 20 +/- 4
-            and we specify sigma_threshold to be 10, then the boundary must be
-            the minimum value of:
-                * m1: 12 - 2 * 10 = -8
-                * m2: 20 - 4 * 10 = -20
-            or -20.
+        For example, if we have a distribution with two measurements:
+            * m1 = 12 +/- 2
+            * m2 = 20 +/- 4
+        and we specify sigma_threshold to be 10, then the boundary must be
+        the minimum value of:
+            * m1: 12 - 2 * 10 = -8
+            * m2: 20 - 4 * 10 = -20
+        or -20.
 
         :param sigma_threshold: The threshold number of sigmas deviations that
             all measurements must be above to define the boundary.
@@ -254,18 +266,19 @@ class Distribution(object):
         ])
 
     def maximum_boundary(self, sigma_threshold):
-        """ The boundary is defined as the value on the measurement (x)
-            axis where all measurements are below by at least the specified
-            sigma deviation tolerance.
+        """
+        The boundary is defined as the value on the measurement (x)
+        axis where all measurements are below by at least the specified
+        sigma deviation tolerance.
 
-            For example, if we have a distribution with two measurements:
-                * m1 = 12 +/- 2
-                * m2 = 20 +/- 4
-            and we specify sigma_threshold to be 10, then the boundary must be
-            the maximum value of:
-                * m1: 42 + 2 * 10 = 52
-                * m2: 20 + 4 * 10 = 60
-            or 60.
+        For example, if we have a distribution with two measurements:
+            * m1 = 12 +/- 2
+            * m2 = 20 +/- 4
+        and we specify sigma_threshold to be 10, then the boundary must be
+        the maximum value of:
+            * m1: 42 + 2 * 10 = 52
+            * m2: 20 + 4 * 10 = 60
+        or 60.
 
         :param sigma_threshold: The threshold number of sigmas deviations that
             all measurements must be below to define the boundary.

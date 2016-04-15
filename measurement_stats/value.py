@@ -10,11 +10,12 @@ import random
 if sys.version > '3':
     long = int
 
+
 def order_of_magnitude(value):
     """
-        Returns the order of magnitude of the most significant digit of the
-        specified number. A value of zero signifies the ones digit, as would be
-        the case in [Number]*10^[Order].
+    Returns the order of magnitude of the most significant digit of the
+    specified number. A value of zero signifies the ones digit, as would be
+    the case in [Number]*10^[Order].
 
     :param value:
     :return:
@@ -23,6 +24,7 @@ def order_of_magnitude(value):
     x = abs(float(value))
     offset = 0 if x >= 1.0 else -1
     return int(math.log10(x) + offset)
+
 
 def round_significant(value, digits):
     """
@@ -42,6 +44,7 @@ def round_significant(value, digits):
     magnitude = math.pow(10, power)
     shifted = round(value*magnitude)
     return shifted / magnitude
+
 
 def least_significant_order(value):
     """
@@ -71,27 +74,29 @@ def least_significant_order(value):
             return om
     return 0
 
-def equivalent(a, b, epsilon = None, machineEpsilonFactor = 100.0):
+
+def equivalent(a, b, epsilon=None, machine_epsilon_factor=100.0):
     """
 
     :param a:
     :param b:
     :param epsilon:
-    :param machineEpsilonFactor:
+    :param machine_epsilon_factor:
     :return:
     """
 
     if epsilon is None:
-        epsilon = machineEpsilonFactor * sys.float_info.epsilon
+        epsilon = machine_epsilon_factor * sys.float_info.epsilon
     return abs(float(a) - float(b)) < epsilon
 
-def round_to_order(value, order, round_op = None, asInt = False):
+
+def round_to_order(value, order, round_op=None, as_int=False):
     """
 
     :param value:
     :param order:
     :param round_op:
-    :param asInt:
+    :param as_int:
     :return:
     """
 
@@ -100,11 +105,12 @@ def round_to_order(value, order, round_op = None, asInt = False):
 
     if order == 0:
         value = round(float(value))
-        return int(value) if asInt else value
+        return int(value) if as_int else value
 
     scale = math.pow(10, order)
     value = scale * round_op(float(value) / scale)
-    return int(value) if asInt else value
+    return int(value) if as_int else value
+
 
 class ValueUncertainty(object):
     """
@@ -112,16 +118,15 @@ class ValueUncertainty(object):
     """
 
     def __init__(self, value =0.0, uncertainty =1.0, **kwargs):
-        if isinstance(value, ValueUncertainty):
-            print('WOW!')
         self.raw = float(value)
         self.raw_uncertainty = abs(float(uncertainty))
 
     @property
     def value(self):
         uncertainty = self.uncertainty
-        order       = least_significant_order(uncertainty)
+        order = least_significant_order(uncertainty)
         return round_to_order(self.raw, order)
+
     @value.setter
     def value(self, value):
         self.raw = float(value)
@@ -129,6 +134,7 @@ class ValueUncertainty(object):
     @property
     def uncertainty(self):
         return round_significant(abs(self.raw_uncertainty), 1)
+
     @uncertainty.setter
     def uncertainty(self, value):
         self.raw_uncertainty = float(value)
@@ -192,7 +198,7 @@ class ValueUncertainty(object):
         return self
 
     @classmethod
-    def createRandom(
+    def create_random(
             cls, min_value =-1.0, max_value =1.0,
             min_uncertainty =0.1, max_uncertainty =2.0):
         """
@@ -292,6 +298,8 @@ class ValueUncertainty(object):
                     self.raw_uncertainty ** 2 +
                     other.raw_uncertainty ** 2
                 )
+            else:
+                raise
         except Exception:
             val = self.raw / float(other)
             unc = abs(self.raw_uncertainty / float(other))
