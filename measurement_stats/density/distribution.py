@@ -295,4 +295,3 @@ class Distribution(object):
             (m.value + float(sigma_threshold) * m.uncertainty)
             for m in self.measurements
         ])
-

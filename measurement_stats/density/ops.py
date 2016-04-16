@@ -8,6 +8,7 @@ from operator import itemgetter
 
 import numpy as np
 
+from measurement_stats.density.distribution import Distribution
 from measurement_stats import value
 
 
@@ -317,3 +318,32 @@ def overlap(distribution, comparison):
         compare_value = compare_next_value
 
     return 1.0 - 0.5*out
+
+
+def weighted_median_average_deviation(distribution):
+    """
+
+    :param distribution:
+    :return:
+    """
+
+    median = percentile(distribution, 0.5)['x']
+
+    # Create a list of the deviations, weighted by the uncertainty in the
+    # measurement
+    deviations = []
+    for m in distribution.measurements:
+        deviations.append(value.ValueUncertainty(
+            abs(median - m.raw),
+            m.raw_uncertainty
+        ))
+
+    dist = Distribution(
+        measurements=deviations,
+        kernel=distribution.kernel
+    )
+
+    return percentile(dist, 0.5)['x']
+
+
+
