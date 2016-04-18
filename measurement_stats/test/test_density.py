@@ -8,6 +8,7 @@ import unittest
 import numpy as np
 
 from measurement_stats import density
+from measurement_stats.density import boundaries
 from measurement_stats import value
 
 
@@ -79,8 +80,8 @@ class TestDensity(unittest.TestCase):
             measurements.append(value.ValueUncertainty())
 
         dist = density.Distribution(measurements=measurements)
-        unweighted = density.boundaries.unweighted_tukey(dist)
-        weighted = density.boundaries.weighted_tukey(dist)
+        unweighted = boundaries.unweighted_tukey(dist)
+        weighted = boundaries.weighted_tukey(dist)
 
     def test_generalizedGetMedian(self):
         for i in range(10):
