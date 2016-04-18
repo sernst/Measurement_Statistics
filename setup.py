@@ -8,7 +8,7 @@ def read_me():
 
 setup(
     name='measurement_stats',
-    version='0.1.2',
+    version='0.2.0',
     description=
             'Measurement statistics with uncertainties and error propagation',
     long_description=read_me(),

@@ -5,6 +5,35 @@ from __future__ import unicode_literals
 
 import math
 
+import numpy as np
+
+
+def uncertainty_estimate(values):
+    """
+    Creates an estimate for the uncertainty to apply to each value base
+    on the separation of the entries that make up the distribution. This is
+    used in cases where no uncertainty was described in the measurements,
+    but the measurement population is fairly large, so that the
+    quantization of the measurements themselves indicate the uncertainty
+    implicitly.
+
+    :param values: An iterable containing entries for the distribution
+    :type: iterable
+
+    :return: The uniform uncertainty value to apply to all of the measurements
+        within the distribution
+    :rtype: float
+    """
+
+    test = list(values) + []
+    test.sort()
+
+    deltas = []
+    for i in range(len(test) - 1):
+        deltas.append(abs(test[i] - test[i + 1]))
+
+    return max(0.00001, 0.5 * float(np.median(deltas)))
+
 
 def gaussian(x, measurement, max_sigma = 10.0):
     """

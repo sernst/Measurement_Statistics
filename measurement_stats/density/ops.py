@@ -8,92 +8,8 @@ from operator import itemgetter
 
 import numpy as np
 
-from measurement_stats.density.distribution import Distribution
 from measurement_stats import value
-
-
-def percentile(distribution, target=0.5, tolerance=1e-6):
-    """
-    Computes the position along the measurement axis where the distribution
-    reaches the given target percentile. The computation is carried out
-    using a numerical integrator, which requires a tolerance where it can
-    determine success and return
-
-    :param distribution: The distribution for which the percentile should be
-        calculated.
-    :type: refined_stats.density.Distribution
-
-    :param target: The percentile to find within the distribution.
-    :type: float
-
-    :param tolerance: The threshold below which the function will declare
-        success and return
-    :type: float
-
-    :return: A dictionary with the keys:
-        * x: Position along the measurement (x) axis where the cumulative
-             probability of the distribution reaches the target percentile
-        * y: Value of the probability function at that point
-        * target: Percentile value that was achieved by integration, which
-            will be within the tolerance threshold of the target value unless
-            the integration convergence took too long and was aborted early.
-    :rtype: dict
-    """
-
-    x_values = uniform_range(distribution, max_sigma=10.0, num_points=2048)
-
-    area = 0.0
-    x = x_values[0]
-    dx = 0
-
-    for i in range(len(x_values) - 1):
-        x = x_values[i]
-        xn = x_values[i + 1]
-        dx = xn - x
-        y = distribution.probability_at(x)
-        yn = distribution.probability_at(xn)
-        new_area = area + dx * (y + 0.5 * abs(yn - y))
-
-        if value.equivalent(new_area, target, tolerance):
-            return dict(
-                x=xn,
-                y=yn,
-                target=new_area
-            )
-
-        elif new_area > target:
-            break
-        else:
-            area = new_area
-
-    ratio = 0.5
-    ratio_min = 0.0
-    ratio_max = 1.0
-
-    for i in range(10000):
-        dx_piece = ratio * dx
-        xn = x + dx_piece
-        yn = distribution.probability_at(xn)
-        area_extension = dx_piece * (y + 0.5 * abs(yn - y))
-        test = area + area_extension
-
-        if value.equivalent(test, target, tolerance):
-            return dict(
-                x=xn,
-                y=yn,
-                target=test
-            )
-
-        if test < target:
-            ratio_min = max(ratio_min, ratio)
-        elif test > target:
-            ratio_max = min(ratio_max, ratio)
-
-        ratio *= (target - area) / area_extension
-        if ratio_max <= ratio <= ratio_min:
-            ratio = ratio_min + 0.5*(ratio_max - ratio_min)
-
-    raise ValueError('Unable to find percentile value')
+from measurement_stats.density.distribution import Distribution
 
 
 def uniform_range(distribution, max_sigma, num_points=0, delta=0):
@@ -327,7 +243,7 @@ def weighted_median_average_deviation(distribution):
     :return:
     """
 
-    median = percentile(distribution, 0.5)['x']
+    median = percentile(distribution, 0.5)
 
     # Create a list of the deviations, weighted by the uncertainty in the
     # measurement
@@ -343,7 +259,38 @@ def weighted_median_average_deviation(distribution):
         kernel=distribution.kernel
     )
 
-    return percentile(dist, 0.5)['x']
+    return percentile(dist, 0.5)
 
 
+def percentile(distribution_or_population, target=0.5, count=None):
+    """
+    Computes the position along the measurement axis where the distribution
+    reaches the given target percentile_with_probability. The computation is
+    carried out using a numerical integrator, which requires a tolerance where
+    it can determine success and return
 
+    :param distribution_or_population: The distribution for which the
+        percentile should be calculated. Or a population list of values created
+        by the distribution on which to calculate the percentile.
+
+    :param target: The percentile_with_probability to find within the
+        distribution.
+    :type: float
+
+    :param count: The number of points to use in populating the distribution
+        for a standard percentile_with_probability calculation. Only matters if
+        a distribution is specified, in which case the count is the size of the
+        population create, which defaults to 4096. Ignored for populations as
+        they already have  a count.
+    :type: int
+    """
+
+    if count is None:
+        count = 4096
+
+    if hasattr(distribution_or_population, 'measurements'):
+        pop = population(distribution_or_population, count=count)
+    else:
+        pop = distribution_or_population
+
+    return np.percentile(pop, 100 * target)

@@ -71,8 +71,7 @@ class TestDensity(unittest.TestCase):
             dist = density.Distribution(measurements=measurements)
             median = density.ops.percentile(dist)
 
-            self.assertAlmostEqual(median['x'], measurements[0].value)
-            self.assertAlmostEqual(median['target'], 0.5)
+            self.assertAlmostEqual(median, measurements[0].value, delta=0.1)
 
     def test_tukey_box(self):
         measurements = []
@@ -80,8 +79,8 @@ class TestDensity(unittest.TestCase):
             measurements.append(value.ValueUncertainty())
 
         dist = density.Distribution(measurements=measurements)
-        unweighted = density.tukey.unweighted_boundaries(dist)
-        weighted = density.tukey.weighted_boundaries(dist)
+        unweighted = density.boundaries.unweighted_tukey(dist)
+        weighted = density.boundaries.weighted_tukey(dist)
 
     def test_generalizedGetMedian(self):
         for i in range(10):

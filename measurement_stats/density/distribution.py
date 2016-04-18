@@ -3,43 +3,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import collections
-
-import numpy as np
-
 from measurement_stats import value
-from measurement_stats import value2D
 from measurement_stats.density import kernels
 
 
-def kernel_uncertainty_estimate(entries):
-    """
-    Creates an estimate for the uncertainty to apply to each value base
-    on the separation of the entries that make up the distribution. This is
-    used in cases where no uncertainty was described in the measurements,
-    but the measurement population is fairly large, so that the
-    quantization of the measurements themselves indicate the uncertainty
-    implicitly.
-
-    :param entries: An iterable containing entries for the distribution
-    :type: iterable
-
-    :return: The uniform uncertainty value to apply to all of the measurements
-        within the distribution
-    :rtype: float
-    """
-
-    test = list(entries) + []
-    test.sort()
-
-    deltas = []
-    for i in range(len(test) - 1):
-        deltas.append(abs(test[i] - test[i + 1]))
-
-    return max(0.00001, 0.5*float(np.median(deltas)))
-
-
-def create_distribution(measurements, uncertainties = None, kernel = None):
+def create(measurements, uncertainties=None, kernel=None):
     """
     Creates a distribution according to the specified arguments.
 
@@ -85,12 +53,12 @@ def create_distribution(measurements, uncertainties = None, kernel = None):
         # If there is no uncertainty estimate one based on the spacing of the
         # points within the distribution and apply that to all of the
         # measurements
-        unc = kernel_uncertainty_estimate(measurements)
+        unc = kernels.uncertainty_estimate(measurements)
         return Distribution(
             kernel=kernel,
             measurements=[
                 value.ValueUncertainty(float(v), unc) for v in measurements
-            ]
+                ]
         )
 
     try:
@@ -104,7 +72,7 @@ def create_distribution(measurements, uncertainties = None, kernel = None):
             kernel=kernel,
             measurements=[
                 value.ValueUncertainty(float(v), float(u)) for v, u in zipper
-            ]
+                ]
         )
     except TypeError:
         # If the uncertainties are not a list then this will be raise and
@@ -136,12 +104,7 @@ class Distribution(object):
     measurement axis (i.e. the x axis).
     """
 
-    MEDIAN_DATA_NT = collections.namedtuple(
-        typename='MEDIAN_DATA_NT',
-        field_names=['x', 'y', 'target']
-    )
-
-    def __init__(self, measurements = None, kernel = None):
+    def __init__(self, measurements=None, kernel=None):
         self.kernel = kernel if kernel else kernels.gaussian
         self.measurements = measurements if measurements is not None else []
 
@@ -156,7 +119,7 @@ class Distribution(object):
 
         :return: The probability (normalized to a maximum of 1.0) at the
             specified position on the measurement axis
-        :rtype: float or value2D.Point2D
+        :rtype: float
         """
 
         return sum(
@@ -173,7 +136,7 @@ class Distribution(object):
         :type: iterable
 
         :return: A list containing the normalized probabilities at each of the
-            specified position values
+            specified position values (floats)
         :rtype: list
         """
 
@@ -219,7 +182,7 @@ class Distribution(object):
 
         return point
 
-    def naked_measurement_values(self, raw = False):
+    def naked_measurement_values(self, raw=False):
         """
         Returns a list of naked numbers, i.e. without uncertainty values.
 
@@ -261,9 +224,9 @@ class Distribution(object):
         if not len(self.measurements):
             return 0.0
         return min([
-            (m.value - float(sigma_threshold) * m.uncertainty)
-            for m in self.measurements
-        ])
+                       (m.value - float(sigma_threshold) * m.uncertainty)
+                       for m in self.measurements
+                       ])
 
     def maximum_boundary(self, sigma_threshold):
         """
@@ -292,6 +255,7 @@ class Distribution(object):
         if not len(self.measurements):
             return 0.0
         return max([
-            (m.value + float(sigma_threshold) * m.uncertainty)
-            for m in self.measurements
-        ])
+                       (m.value + float(sigma_threshold) * m.uncertainty)
+                       for m in self.measurements
+                       ])
+
