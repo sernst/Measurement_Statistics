@@ -37,12 +37,12 @@ def uncertainty_estimate(values):
 
 def gaussian(x, measurement, max_sigma = 10.0):
     """
-    A Gaussian kernel function that returns a probability density value at
+    A Gaussian kernel function that returns a probability distributions value at
     the given x position where the Gaussian is defined by the center (mean)
     and width (standard deviation)
 
     :param x: Position where the kernel should be evaluated to return the
-        probability density value
+        probability distributions value
     :type: float
 
     :param measurement: A ValueUncertainty instance that is used to define
@@ -50,7 +50,7 @@ def gaussian(x, measurement, max_sigma = 10.0):
     :type: value.ValueUncertainty
 
     :param max_sigma: The maximum amount of sigmas from the measurement value
-        where the kernel will calculate the probability density. Any values
+        where the kernel will calculate the probability distributions. Any values
         outside of this threshold will just return a value of 0.
     :type: float:
 

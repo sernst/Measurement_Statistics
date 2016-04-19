@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from measurement_stats.density import ops
+from measurement_stats.distributions import distributions_ops
 
 
 def to_weighted_population(distribution_or_population, count=None):
@@ -18,7 +18,7 @@ def to_weighted_population(distribution_or_population, count=None):
         count = 4096
 
     if hasattr(distribution_or_population, 'measurements'):
-        return ops.population(distribution_or_population, count)
+        return distributions_ops.population(distribution_or_population, count)
 
     return distribution_or_population
 

@@ -7,8 +7,8 @@ import unittest
 
 import numpy as np
 
-from measurement_stats import density
-from measurement_stats.density import boundaries
+from measurement_stats import distributions
+from measurement_stats.distributions import boxes
 from measurement_stats import value
 
 
@@ -30,7 +30,7 @@ class TestDensity(unittest.TestCase):
         x_values = np.linspace(-10.0, 10.0, 100)
         measurements = [value.ValueUncertainty()]
 
-        dist = density.Distribution(measurements=measurements)
+        dist = distributions.Distribution(measurements=measurements)
 
         area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
@@ -42,7 +42,7 @@ class TestDensity(unittest.TestCase):
         x_values = np.linspace(-10.0, 10.0, 100)
         measurements = [value.ValueUncertainty(), value.ValueUncertainty()]
 
-        dist = density.Distribution(measurements=measurements)
+        dist = distributions.Distribution(measurements=measurements)
         area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
 
@@ -57,7 +57,7 @@ class TestDensity(unittest.TestCase):
             value.ValueUncertainty(2.0, 2.0)
         ]
 
-        dist = density.Distribution(measurements=measurements)
+        dist = distributions.Distribution(measurements=measurements)
         area = get_area_under_curve(x_values, dist.probabilities_at(x_values))
         self.assertAlmostEqual(area, 1.0, 3)
 
@@ -69,8 +69,8 @@ class TestDensity(unittest.TestCase):
         for i in range(10):
             measurements = [value.ValueUncertainty.create_random(-100, 100)]
 
-            dist = density.Distribution(measurements=measurements)
-            median = density.ops.percentile(dist)
+            dist = distributions.Distribution(measurements=measurements)
+            median = distributions.distributions_ops.percentile(dist)
 
             self.assertAlmostEqual(median, measurements[0].value, delta=0.1)
 
@@ -79,9 +79,9 @@ class TestDensity(unittest.TestCase):
         while len(measurements) < 6:
             measurements.append(value.ValueUncertainty())
 
-        dist = density.Distribution(measurements=measurements)
-        unweighted = boundaries.unweighted_tukey(dist)
-        weighted = boundaries.weighted_tukey(dist)
+        dist = distributions.Distribution(measurements=measurements)
+        unweighted = boxes.unweighted_tukey(dist)
+        weighted = boxes.weighted_tukey(dist)
 
     def test_generalizedGetMedian(self):
         for i in range(10):
@@ -94,48 +94,48 @@ class TestDensity(unittest.TestCase):
                 value.ValueUncertainty.create_random()
             ]
 
-            dist = density.Distribution(measurements=measurements)
-            result = density.ops.percentile(dist)
+            dist = distributions.Distribution(measurements=measurements)
+            result = distributions.distributions_ops.percentile(dist)
 
     def test_overlap(self):
-        d1 = density.Distribution(measurements=[value.ValueUncertainty()])
-        d2 = density.Distribution(measurements=[value.ValueUncertainty()])
-        self.assertAlmostEqual(density.ops.overlap(d1, d2), 1.0)
+        d1 = distributions.Distribution(measurements=[value.ValueUncertainty()])
+        d2 = distributions.Distribution(measurements=[value.ValueUncertainty()])
+        self.assertAlmostEqual(distributions.distributions_ops.overlap(d1, d2), 1.0)
 
     def test_compareAgainstGaussian2(self):
-        d1 = density.Distribution(measurements=[value.ValueUncertainty()])
-        d2 = density.Distribution(
+        d1 = distributions.Distribution(measurements=[value.ValueUncertainty()])
+        d2 = distributions.Distribution(
             measurements=[value.ValueUncertainty(uncertainty=0.5)]
         )
-        self.assertLess(density.ops.overlap(d1, d2), 0.7)
+        self.assertLess(distributions.distributions_ops.overlap(d1, d2), 0.7)
 
     def test_compareAgainstGaussian3(self):
-        d1 = density.Distribution(measurements=[value.ValueUncertainty()])
-        d2 = density.Distribution(measurements=[
+        d1 = distributions.Distribution(measurements=[value.ValueUncertainty()])
+        d2 = distributions.Distribution(measurements=[
             value.ValueUncertainty(5.0),
             value.ValueUncertainty(8.0),
             value.ValueUncertainty(10.0, 2.0)
         ])
 
-        self.assertGreaterEqual(density.ops.overlap(d1, d2), 0.0)
-        self.assertLess(density.ops.overlap(d1, d2), 0.06)
+        self.assertGreaterEqual(distributions.distributions_ops.overlap(d1, d2), 0.0)
+        self.assertLess(distributions.distributions_ops.overlap(d1, d2), 0.06)
 
     def test_fromValuesOnly(self):
         values = [11, 15, 3, 7, 2]
-        dd = density.create_distribution(values)
+        dd = distributions.create_distribution(values)
         self.assertAlmostEqual(dd.minimum_value().value, min(*values))
         self.assertAlmostEqual(dd.maximum_value().value, max(*values))
 
     def test_getAdaptiveRange(self):
-        dist = density.Distribution(measurements=[value.ValueUncertainty()])
-        result = density.ops.adaptive_range(dist, 10.0)
+        dist = distributions.Distribution(measurements=[value.ValueUncertainty()])
+        result = distributions.distributions_ops.adaptive_range(dist, 10.0)
 
     def test_getAdaptiveRangeMulti(self):
         measurements = [
             value.ValueUncertainty(),
             value.ValueUncertainty(2.0, 0.5) ]
-        dist = density.Distribution(measurements=measurements)
-        result = density.ops.adaptive_range(dist, 10.0)
+        dist = distributions.Distribution(measurements=measurements)
+        result = distributions.distributions_ops.adaptive_range(dist, 10.0)
 
 
 if __name__ == '__main__':

@@ -16,10 +16,10 @@ Say, for example, that we have measured a rectangle to be 11 +/- 0.4 centimeters
 wide and 8 +/- 0.3 centimeters long. We can then calculate the area with
 uncertainty as follows::
 
-    from measurement_stats import value
+    from measurement_stats import ValueUncertainty
 
-    width = value.ValueUncertainty(11, 0.4)
-    length = value.ValueUncertainty(8, 0.3)
+    width = ValueUncertainty(11, 0.4)
+    length = ValueUncertainty(8, 0.3)
 
     area = length * width
 
@@ -34,8 +34,10 @@ uncertainty of 0.1 centimeters and measured a period of that pendulum to be
 1.936 seconds with an uncertainty of 0.004 seconds, the acceleration due to
 gravity, with propagated uncertainty, can be determined as follows::
 
-    l = value.ValueUncertainty(92.95, 0.1)
-    T = value.ValueUncertainty(1.936, 0.004)
+    from measurement_stats import ValueUncertainty
+
+    l = ValueUncertainty(92.95, 0.1)
+    T = ValueUncertainty(1.936, 0.004)
 
     g = 4.0 * (math.pi ** 2) * l / (T ** 2)
 

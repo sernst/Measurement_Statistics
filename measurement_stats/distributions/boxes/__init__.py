@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import numpy as np
 
-from measurement_stats.density.boundaries import support
+from measurement_stats.distributions.boxes import support
 
 
 def unweighted_tukey(distribution_or_values):
@@ -57,7 +57,7 @@ def weighted_tukey(distribution_or_population, count=None):
     """
     Returns the weighted Tukey box-whisker boundaries for the given
     distribution, including the mean. These boundaries are based on the
-    weighted density distribution and take into account the uncertainties
+    weighted distributions distribution and take into account the uncertainties
     in the measurements.
 
     :param distribution_or_population:

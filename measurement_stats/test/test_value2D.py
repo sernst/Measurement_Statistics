@@ -51,6 +51,21 @@ class TestValue2D(unittest.TestCase):
             self.assertAlmostEqual(p.x.raw, radius * test[1], 2)
             self.assertAlmostEqual(p.y.raw, radius * test[2], 2)
 
+    def test_projection(self):
+        """
+
+        :return:
+        """
+
+        line_start = value2D.create_point(0, 0)
+        line_end = value2D.create_point(1, 1)
+        point = value2D.create_point(0, 1)
+
+        result = value2D.closest_point_on_line(point, line_start, line_end)
+
+        self.assertIsNotNone(result)
+        print('PROJECTION:', result)
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestValue2D)

@@ -9,7 +9,16 @@ from operator import itemgetter
 import numpy as np
 
 from measurement_stats import value
-from measurement_stats.density.distribution import Distribution
+from measurement_stats.distributions.distributions_type import Distribution
+
+__all__ = [
+    'uniform_range',
+    'adaptive_range',
+    'population',
+    'overlap',
+    'weighted_median_average_deviation',
+    'percentile'
+]
 
 
 def uniform_range(distribution, max_sigma, num_points=0, delta=0):
@@ -19,7 +28,7 @@ def uniform_range(distribution, max_sigma, num_points=0, delta=0):
     argument.
 
     :param distribution: The distribution for which the range should be created
-    :type: refined_stats.density.Distribution
+    :type: refined_stats.distributions.Distribution
 
     :param max_sigma: Threshold sigma deviations that defines the range
         boundaries. The range will begin where all measurements are at least
@@ -63,10 +72,10 @@ def adaptive_range(distribution, max_sigma, max_delta=None):
 
     The values returned are not spaced equally. Instead they are spaced
     based on the gradient of the distribution, where larger gradients
-    receive a higher density of values and smaller gradients less.
+    receive a higher distributions of values and smaller gradients less.
 
     :param distribution: The distribution for which the range should be created
-    :type: refined_stats.density.Distribution
+    :type: refined_stats.distributions.Distribution
 
     :param max_sigma: Threshold sigma deviations that defines the range
         boundaries. The range will begin where all measurements are at least
@@ -157,7 +166,7 @@ def population(distribution, count=2048):
     :type: int
 
     :return: A list of numerical values that approximate the the measurement
-        probability density distribution
+        probability distributions distribution
     :rtype: list
     """
 
@@ -191,10 +200,10 @@ def overlap(distribution, comparison):
     characterized by another one.
 
     :param distribution: A distribution for overlap comparison
-    :type: refined_stats.density.Distribution
+    :type: refined_stats.distributions.Distribution
 
     :param comparison: A distribution for overlap comparison
-    :type: refined_stats.density.Distribution
+    :type: refined_stats.distributions.Distribution
 
     :return: overlap on range [0, 1.0]
     :rtype: float

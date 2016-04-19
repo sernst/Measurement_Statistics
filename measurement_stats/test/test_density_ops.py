@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 
 from measurement_stats import value
-from measurement_stats import density
+from measurement_stats import distributions
 
 
 class TestDensityOps(unittest.TestCase):
@@ -22,10 +22,10 @@ class TestDensityOps(unittest.TestCase):
             measurements.append(value.ValueUncertainty(delta, 1.1))
             measurements.append(value.ValueUncertainty(-delta, 1.1))
 
-        dist = density.Distribution(measurements)
+        dist = distributions.Distribution(measurements)
 
-        median = density.ops.percentile(dist, 0.5)
-        mad = density.ops.weighted_median_average_deviation(dist)
+        median = distributions.distributions_ops.percentile(dist, 0.5)
+        mad = distributions.distributions_ops.weighted_median_average_deviation(dist)
 
         self.assertAlmostEqual(median, 0, places=1)
         self.assertAlmostEqual(
@@ -40,11 +40,11 @@ class TestDensityOps(unittest.TestCase):
         for i in range(400):
             measurements.append(value.ValueUncertainty.create_random())
 
-        dist = density.Distribution(measurements)
+        dist = distributions.Distribution(measurements)
 
         self.assertAlmostEqual(
-            0, density.ops.percentile(dist, count=6000),
-            delta=0.05
+            0, distributions.distributions_ops.percentile(dist, count=6000),
+            delta=0.075
         )
 
 

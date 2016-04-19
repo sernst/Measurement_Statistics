@@ -3,8 +3,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from measurement_stats import errors
 from measurement_stats import value
-from measurement_stats.density import kernels
+from measurement_stats.value import ValueUncertainty
+from measurement_stats.distributions import kernels
 
 
 def create(measurements, uncertainties=None, kernel=None):
@@ -56,23 +58,24 @@ def create(measurements, uncertainties=None, kernel=None):
         unc = kernels.uncertainty_estimate(measurements)
         return Distribution(
             kernel=kernel,
-            measurements=[
-                value.ValueUncertainty(float(v), unc) for v in measurements
-                ]
+            measurements=[ValueUncertainty(v, unc) for v in measurements]
         )
 
     try:
         if len(measurements) != len(uncertainties):
-            raise ValueError(
-                'Measurements and uncertainties must be equal length iterables'
-            )
+            raise ValueError(errors.message(
+                """
+                The measurements (length {}) and uncertainties
+                (length {}) arguments be equal length iterables
+                """,
+                len(measurements),
+                len(uncertainties)
+            ))
 
         zipper = zip(measurements, uncertainties)
         return Distribution(
             kernel=kernel,
-            measurements=[
-                value.ValueUncertainty(float(v), float(u)) for v, u in zipper
-                ]
+            measurements=[ValueUncertainty(v, u) for v, u in zipper]
         )
     except TypeError:
         # If the uncertainties are not a list then this will be raise and
@@ -81,16 +84,13 @@ def create(measurements, uncertainties=None, kernel=None):
 
     return Distribution(
         kernel=kernel,
-        measurements=[
-            value.ValueUncertainty(float(v), float(uncertainties))
-            for v in measurements
-            ]
+        measurements=[ValueUncertainty(v, uncertainties) for v in measurements]
     )
 
 
 class Distribution(object):
     """
-    Data structure representing a probability density distribution
+    Data structure representing a probability distributions distribution
     for a given set of measurements and a kernel function that defines
     how the probability for each measurement is distributed along the
     measurement (i.e. x) axis.
@@ -122,9 +122,8 @@ class Distribution(object):
         :rtype: float
         """
 
-        return sum(
-            [self.kernel(x, m) for m in self.measurements]
-        ) / len(self.measurements)
+        density_sum = sum([self.kernel(x, m) for m in self.measurements])
+        return density_sum / len(self.measurements)
 
     def probabilities_at(self, x_values):
         """
@@ -224,9 +223,9 @@ class Distribution(object):
         if not len(self.measurements):
             return 0.0
         return min([
-                       (m.value - float(sigma_threshold) * m.uncertainty)
-                       for m in self.measurements
-                       ])
+            (m.value - float(sigma_threshold) * m.uncertainty)
+            for m in self.measurements
+        ])
 
     def maximum_boundary(self, sigma_threshold):
         """
@@ -255,7 +254,7 @@ class Distribution(object):
         if not len(self.measurements):
             return 0.0
         return max([
-                       (m.value + float(sigma_threshold) * m.uncertainty)
-                       for m in self.measurements
-                       ])
+            (m.value + float(sigma_threshold) * m.uncertainty)
+            for m in self.measurements
+        ])
 
