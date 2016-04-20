@@ -247,28 +247,22 @@ def overlap(distribution, comparison):
 
 def weighted_median_average_deviation(distribution):
     """
+    Calculates the weighted MAD, by generating a weighted median and population
+    of the distribution and using that to calculate the absolute deviations
+    and subsequent mean
 
     :param distribution:
+        The distribution on which to calculate the MAD
     :return:
+        A float value for the MAD
     """
 
     median = percentile(distribution, 0.5)
 
-    # Create a list of the deviations, weighted by the uncertainty in the
-    # measurement
-    deviations = []
-    for m in distribution.measurements:
-        deviations.append(value.ValueUncertainty(
-            abs(median - m.raw),
-            m.raw_uncertainty
-        ))
+    # Create a population of deviations from the median
+    pop = [abs(median - x) for x in population(distribution)]
 
-    dist = Distribution(
-        measurements=deviations,
-        kernel=distribution.kernel
-    )
-
-    return percentile(dist, 0.5)
+    return np.median(pop)
 
 
 def percentile(distribution_or_population, target=0.5, count=None):
