@@ -245,7 +245,7 @@ def overlap(distribution, comparison):
     return 1.0 - 0.5*out
 
 
-def weighted_median_average_deviation(distribution):
+def weighted_median_average_deviation(distribution, count = None):
     """
     Calculates the weighted MAD, by generating a weighted median and population
     of the distribution and using that to calculate the absolute deviations
@@ -253,11 +253,12 @@ def weighted_median_average_deviation(distribution):
 
     :param distribution:
         The distribution on which to calculate the MAD
+    :param count:
     :return:
         A float value for the MAD
     """
 
-    median = percentile(distribution, 0.5)
+    median = percentile(distribution, 0.5, count=count)
 
     # Create a population of deviations from the median
     pop = [abs(median - x) for x in population(distribution)]
