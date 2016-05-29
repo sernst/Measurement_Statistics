@@ -1,6 +1,8 @@
 from setuptools import setup
 from setuptools import find_packages
 
+# python setup.py sdist bdist_wheel
+# twine upload dist/measurement_stats-0.2.2*
 
 def read_me():
     with open('README.rst') as f:
@@ -8,7 +10,7 @@ def read_me():
 
 setup(
     name='measurement_stats',
-    version='0.2.1',
+    version='0.2.2',
     description=
             'Measurement statistics with uncertainties and error propagation',
     long_description=read_me(),
