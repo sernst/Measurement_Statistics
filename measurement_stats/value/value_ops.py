@@ -96,6 +96,7 @@ def equivalent(a, b, epsilon=None, machine_epsilon_factor=100.0):
 
     if epsilon is None:
         epsilon = machine_epsilon_factor * sys.float_info.epsilon
+
     return abs(float(a) - float(b)) < epsilon
 
 

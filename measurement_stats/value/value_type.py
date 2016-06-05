@@ -133,6 +133,39 @@ class ValueUncertainty(object):
             value=random.uniform(min_value, max_value),
             uncertainty=random.uniform(min_uncertainty, max_uncertainty))
 
+    def __lt__(self, other):
+        try:
+            return self.value < other.value
+        except Exception:
+            pass
+
+        try:
+            return self.value < other
+        except Exception:
+            pass
+
+        raise TypeError(
+            'Unable to determine less than for {}'.format(type(other))
+        )
+
+    def __gt__(self, other):
+        try:
+            return self.value > other.value
+        except Exception:
+            pass
+
+        try:
+            return self.value > other
+        except Exception:
+            pass
+
+        raise TypeError(
+            'Unable to determine greater than for {}'.format(type(other))
+        )
+
+    def __float__(self):
+        return self.raw
+
     def __pow__(self, power, modulo=None):
         if value_ops.equivalent(self.raw, 0.0, 1e-5):
             return self.__class__(self.raw, self.raw_uncertainty)
