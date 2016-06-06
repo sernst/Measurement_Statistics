@@ -155,3 +155,25 @@ def windowed_smooth(measurements, size=1, population_size=512):
             window_populations.pop(0)
 
     return out
+
+
+def box_smooth(measurements, size=2, population_size=512):
+    """
+
+    :param measurements:
+    :param size:
+    :param population_size:
+    :return:
+    """
+
+    out = []
+
+    for i in range(0, len(measurements), size):
+        d = mdists.Distribution(measurements[i:(i + size)])
+        pop = mdists.population(d, count=population_size)
+        median = mdists.percentile(pop)
+        mad = mdists.weighted_median_average_deviation(pop)
+        while len(out) < (i + size):
+            out.append(ValueUncertainty(median, mad))
+
+    return out
