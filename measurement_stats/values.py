@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import math
+import functools
 
 from measurement_stats import ValueUncertainty
 from measurement_stats import distributions as mdists
@@ -177,3 +178,49 @@ def box_smooth(measurements, size=2, population_size=512):
             out.append(ValueUncertainty(median, mad))
 
     return out
+
+
+def maximum(measurements):
+    """
+
+    :param values:
+    :return:
+    """
+
+    def max_compare(a, b):
+        if a is None:
+            return b
+        elif b is None:
+            return a
+
+        if a.value > b.value:
+            return a
+        elif b.value > a.value:
+            return b
+
+        return a if a.uncertainty < b.uncertainty else b
+
+    return functools.reduce(max_compare, measurements)
+
+
+def minimum(measurements):
+    """
+
+    :param values:
+    :return:
+    """
+
+    def min_compare(a, b):
+        if a is None:
+            return b
+        elif b is None:
+            return a
+
+        if a.value < b.value:
+            return a
+        elif b.value < a.value:
+            return b
+
+        return b if b.uncertainty < a.uncertainty else a
+
+    return functools.reduce(min_compare, measurements)
