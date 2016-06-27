@@ -3,9 +3,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
 import math
-import random
+import sys
 
 if sys.version > '3':
     long = int
@@ -16,7 +15,9 @@ __all__ = [
     'round_significant',
     'least_significant_order',
     'equivalent',
-    'round_to_order'
+    'round_to_order',
+    'minimum',
+    'maximum'
 ]
 
 
@@ -122,6 +123,51 @@ def round_to_order(value, order, round_op=None, as_int=False):
     return int(value) if as_int else value
 
 
+def minimum(measurement_one, measurement_two, include_uncertainty=True):
+    """
+
+    :param measurement_one:
+    :param measurement_two:
+    :param include_uncertainty:
+    :return:
+    """
+
+    if measurement_one.value < measurement_two.value:
+        return measurement_one
+    elif measurement_two.value < measurement_one.value:
+        return measurement_two
+
+    if not include_uncertainty:
+        return measurement_one
+
+    if measurement_one.uncertainty > measurement_two.uncertainty:
+        return measurement_one
+    elif measurement_two.uncertainty > measurement_one.uncertainty:
+        return measurement_two
+
+    return measurement_one
 
 
+def maximum(measurement_one, measurement_two, include_uncertainty = True):
+    """
 
+    :param measurement_one:
+    :param measurement_two:
+    :param include_uncertainty:
+    :return:
+    """
+
+    if measurement_one.value > measurement_two.value:
+        return measurement_one
+    elif measurement_two.value > measurement_one.value:
+        return measurement_two
+
+    if not include_uncertainty:
+        return measurement_one
+
+    if measurement_one.uncertainty > measurement_two.uncertainty:
+        return measurement_one
+    elif measurement_two.uncertainty > measurement_one.uncertainty:
+        return measurement_two
+
+    return measurement_one

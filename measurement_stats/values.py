@@ -183,7 +183,7 @@ def box_smooth(measurements, size=2, population_size=512):
 def maximum(measurements):
     """
 
-    :param values:
+    :param measurements:
     :return:
     """
 
@@ -206,7 +206,7 @@ def maximum(measurements):
 def minimum(measurements):
     """
 
-    :param values:
+    :param measurements:
     :return:
     """
 

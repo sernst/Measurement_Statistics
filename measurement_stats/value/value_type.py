@@ -26,8 +26,11 @@ class ValueUncertainty(object):
     """
 
     def __init__(self, value=0.0, uncertainty=1.0, **kwargs):
-        self.raw = float(value)
-        self.raw_uncertainty = abs(float(uncertainty))
+        self.raw = kwargs.get('raw', float(value))
+        self.raw_uncertainty = abs(kwargs.get(
+            'raw_uncertainty',
+            float(uncertainty)
+        ))
 
     @property
     def value(self):
@@ -76,6 +79,7 @@ class ValueUncertainty(object):
     def from_dict(self, source):
         self.raw = source['raw']
         self.raw_uncertainty = source['raw_uncertainty']
+        return self
 
     def to_dict(self):
         return dict(
@@ -105,6 +109,7 @@ class ValueUncertainty(object):
 
         if uncertainty is not None:
             self.raw_uncertainty = uncertainty
+        return self
 
     def freeze(self):
         """
@@ -132,6 +137,21 @@ class ValueUncertainty(object):
         return ValueUncertainty(
             value=random.uniform(min_value, max_value),
             uncertainty=random.uniform(min_uncertainty, max_uncertainty))
+
+    def __eq__(self, other):
+        try:
+            return self.value == other.value
+        except Exception:
+            pass
+
+        try:
+            return self.value == other
+        except Exception:
+            pass
+
+        raise TypeError(
+            'Unable to determine equality for {}'.format(type(other))
+        )
 
     def __lt__(self, other):
         try:
@@ -276,3 +296,6 @@ class ValueUncertainty(object):
 
     def __str__(self):
         return '<%s %s>' % (self.__class__.__name__, self.label)
+
+    def __abs__(self):
+        return self.clone().update(value=abs(self.raw))
