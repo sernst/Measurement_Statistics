@@ -141,6 +141,26 @@ class Distribution(object):
 
         return [self.probability_at(x) for x in x_values]
 
+    def heighted_probability_at(self, x, measurement_heights):
+        """
+
+        :param x:
+        :param measurement_heights:
+        :return:
+        """
+
+        density_sum = sum([
+            h * self.kernel(x, m)
+            for h, m in zip(measurement_heights, self.measurements)
+        ])
+        return density_sum / len(self.measurements)
+
+    def heighted_probabilities_at(self, x_values, measurement_heights):
+        return [
+            self.heighted_probability_at(x, measurement_heights)
+            for x in x_values
+        ]
+
     def minimum_value(self):
         """
         The lowest measurement value in the distribution
