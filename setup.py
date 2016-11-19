@@ -1,8 +1,20 @@
+import os
+import glob
 from setuptools import setup
 from setuptools import find_packages
+from distutils.core import setup
+from Cython.Build import cythonize
 
+# python setup.py build_ext --inplace
 # python setup.py sdist bdist_wheel
 # twine upload dist/measurement_stats-0.2.2*
+
+my_directory = os.path.realpath(os.path.dirname(__file__))
+
+cython_glob_path = os.path.join(my_directory, '**', '*.pyx')
+cython_files = cythonize(
+    [p for p in glob.iglob(cython_glob_path, recursive=True)]
+)
 
 
 def read_me():
@@ -34,10 +46,12 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'
     ],
+    ext_modules=cython_files,
     install_requires=[
         'pandas',
         'numpy',
-        'six'
+        'six',
+        'scipy'
     ],
     test_suite='nose.collector',
     tests_require=['nose'],

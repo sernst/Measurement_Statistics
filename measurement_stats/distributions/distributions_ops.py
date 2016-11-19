@@ -7,7 +7,10 @@ import random
 from operator import itemgetter
 
 import numpy as np
+import scipy.integrate as integrate
 
+from measurement_stats import ValueUncertainty
+from measurement_stats import values
 from measurement_stats import value
 from measurement_stats.distributions.distributions_type import Distribution
 
@@ -16,6 +19,7 @@ __all__ = [
     'adaptive_range',
     'population',
     'overlap',
+    'overlap2',
     'weighted_median_average_deviation',
     'percentile'
 ]
@@ -189,6 +193,31 @@ def population(distribution, count=2048):
             break
         x = min(x_max, x + delta)
     return out
+
+
+def overlap2(distribution, comparison):
+    min_value = values.minimum(
+        distribution.measurements +
+        comparison.measurements
+    )
+    max_value = values.maximum(
+        distribution.measurements +
+        comparison.measurements
+    )
+
+    def value_at(x):
+        return abs(
+            distribution.probability_at(x) -
+            comparison.probability_at(x)
+        )
+
+    result = integrate.quad(
+        value_at,
+        min_value.value - 10.0 * min_value.uncertainty,
+        max_value.value + 10.0 * max_value.uncertainty,
+        limit=100
+    )
+    return ValueUncertainty(value=1.0 - 0.5 * result[0], uncertainty=result[1])
 
 
 def overlap(distribution, comparison):

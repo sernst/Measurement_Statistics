@@ -51,14 +51,14 @@ def weighted(*values):
             return value.ValueUncertainty()
 
     wxs = 0.0
-    ws  = 0.0
+    ws = 0.0
     for v in values:
         w = 1.0/(v.uncertainty*v.uncertainty)
         wxs += w*v.value
-        ws  += w
+        ws += w
 
-    ave = wxs/ws
-    unc =  1.0/math.sqrt(ws)
+    ave = wxs / ws
+    unc = 1.0 / math.sqrt(ws)
 
     return value.ValueUncertainty(value=ave, uncertainty=unc)
 
@@ -93,7 +93,7 @@ def weighted_mean_and_deviation(*values):
         w = 1.0/(v.uncertainty*v.uncertainty)
         weights.append(w)
         wxs += w*v.value
-        ws  += w
+        ws += w
 
     ave = wxs/ws
     dev = 0.0
