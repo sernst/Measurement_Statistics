@@ -1,0 +1,37 @@
+package:
+    name: measurment_stats
+    version: "{{ VERSION }}"
+
+build:
+    number: 1
+    noarch_python: True
+
+source:
+  path: {{ PATH }}
+
+requirements:
+  build:
+    - python
+    - pandas
+    - numpy
+    - jinja2
+    - six
+    - scipy
+    - cython
+
+  run:
+    - python
+    - pandas
+    - numpy
+    - jinja2
+    - six
+    - scipy
+
+test:
+  imports:
+    - measurement_stats
+
+about:
+  home: https://github.com/sernst/Measurement_Statistics
+  license: MIT
+  license_file: LICENSE
