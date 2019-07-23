@@ -1,15 +1,19 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+import typing
 
+import numpy as np
+
+import measurement_stats as mstats
 from measurement_stats import errors
 from measurement_stats import value
 from measurement_stats.value import ValueUncertainty
 from measurement_stats.distributions import kernels
 
 
-def create(measurements, uncertainties=None, kernel=None):
+def create(
+        measurements: 'mstats.ArrayType',
+        uncertainties: typing.Optional['mstats.ArrayType'] = None,
+        kernel: kernels.Kernel = None
+):
     """
     Creates a distribution according to the specified arguments.
 
@@ -42,7 +46,7 @@ def create(measurements, uncertainties=None, kernel=None):
     :rtype: Distribution
     """
 
-    if not measurements:
+    if measurements is None or len(measurements) == 0:
         return None
 
     measurements = list(measurements) + []
@@ -104,62 +108,134 @@ class Distribution(object):
     measurement axis (i.e. the x axis).
     """
 
-    def __init__(self, measurements=None, kernel=None):
-        self.kernel = kernel if kernel else kernels.gaussian
+    def __init__(
+            self,
+            measurements: typing.List['mstats.ValueUncertainty'] = None,
+            kernel: kernels.Kernel = None
+    ):
+        self.kernel = kernel if kernel else kernels.GAUSSIAN_KERNEL
         self.measurements = measurements if measurements is not None else []
 
-    def probability_at(self, x):
+        values, uncertainties = zip(*[
+            (m.value, m.uncertainty)
+            for m in self.measurements
+        ])
+        self.values = np.array(values)
+        self.uncertainties = np.array(uncertainties)
+
+    def density_at(self, x: float) -> float:
+        """
+        Returns the density of the distribution at the given position
+        on the measurement axis (x).
+
+        :param x:
+            The position along the measurement axis where the density
+            will be calculated.
+
+        :return:
+            The density at the specified position on the measurement axis.
+        """
+        return float(np.sum(self.kernel.many(
+            x,
+            self.values,
+            self.uncertainties
+        )))
+
+    def densities_at(
+            self,
+            x_values: 'mstats.ArrayType'
+    ) -> typing.List[float]:
+        """
+        The densities for the distribution at the given locations on
+        the measurement (x) axis.
+
+        :param x_values:
+            An iterable containing the values where the
+            probability of the distribution should be calculated
+
+        :return:
+            A list containing the normalized probabilities at each of the
+            specified position values (floats)
+        """
+        return [self.density_at(x) for x in x_values]
+
+    def heighted_density_at(
+            self,
+            x: 'mstats.ArrayType',
+            measurement_heights: 'mstats.ArrayType'
+    ) -> float:
+        """..."""
+        return float(np.sum(
+            self.kernel.many(x, self.values, self.uncertainties)
+            * np.array(measurement_heights)
+        ))
+
+    def heighted_densities_at(
+            self,
+            x_values: typing.List[float],
+            measurement_heights: 'mstats.ArrayType'
+    ) -> typing.List[float]:
+        return [
+            self.heighted_density_at(x, measurement_heights)
+            for x in x_values
+        ]
+
+    def probability_at(self, x: float) -> float:
         """
         Returns the probability of the distribution at the given position
         on the measurement axis (x)
 
-        :param x: The position along the measurement axis where the probability
-            will be calculated
-        :type: float
+        :param x:
+            The position along the measurement axis where the probability
+            will be calculated.
 
-        :return: The probability (normalized to a maximum of 1.0) at the
+        :return:
+            The probability (normalized to a maximum of 1.0) at the
             specified position on the measurement axis
-        :rtype: float
         """
+        return self.density_at(x) / len(self.measurements)
 
-        density_sum = sum([self.kernel(x, m) for m in self.measurements])
-        return density_sum / len(self.measurements)
-
-    def probabilities_at(self, x_values):
+    def probabilities_at(
+            self,
+            x_values: 'mstats.ArrayType'
+    ) -> typing.List[float]:
         """
         The probabilities for the distribution at the given locations on
-        the measurement (x) axis
+        the measurement (x) axis.
 
-        :param x_values: An iterable containing the values where the
+        :param x_values:
+            An iterable containing the values where the
             probability of the distribution should be calculated
-        :type: iterable
 
-        :return: A list containing the normalized probabilities at each of the
-            specified position values (floats)
-        :rtype: list
-        """
-
-        return [self.probability_at(x) for x in x_values]
-
-    def heighted_probability_at(self, x, measurement_heights):
-        """
-
-        :param x:
-        :param measurement_heights:
         :return:
+            A list containing the normalized probabilities at each of the
+            specified position values (floats)
         """
+        return list(
+            np.array(self.densities_at(x_values))
+            / len(self.measurements)
+        )
 
-        density_sum = sum([
-            h * self.kernel(x, m)
-            for h, m in zip(measurement_heights, self.measurements)
-        ])
-        return density_sum / len(self.measurements)
+    def heighted_probability_at(
+            self,
+            x: 'mstats.ArrayType',
+            measurement_heights: 'mstats.ArrayType'
+    ) -> float:
+        """..."""
+        return float(np.sum(
+            np.array(self.heighted_density_at(x, measurement_heights))
+            / np.sum(np.array(measurement_heights))
+        ))
 
-    def heighted_probabilities_at(self, x_values, measurement_heights):
-        return [
-            self.heighted_probability_at(x, measurement_heights)
-            for x in x_values
-        ]
+    def heighted_probabilities_at(
+            self,
+            x_values: 'mstats.ArrayType',
+            measurement_heights: 'mstats.ArrayType'
+    ) -> typing.List[float]:
+        return list(
+            np.array(self.heighted_densities_at(x_values, measurement_heights))
+            / np.sum(np.array(measurement_heights))
+        )
 
     def minimum_value(self):
         """

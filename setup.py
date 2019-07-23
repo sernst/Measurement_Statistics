@@ -1,10 +1,9 @@
-import os
 import glob
 import json
-from setuptools import setup
+import os
+
 from setuptools import find_packages
-from distutils.core import setup
-from Cython.Build import cythonize
+from setuptools import setup
 
 # python3 setup.py register -r pypitest
 
@@ -21,11 +20,6 @@ from Cython.Build import cythonize
 # python conda-recipe\conda-builder.py
 
 my_directory = os.path.realpath(os.path.dirname(__file__))
-
-cython_glob_path = os.path.join(my_directory, '**', '*.pyx')
-cython_files = cythonize(
-    [p for p in glob.iglob(cython_glob_path, recursive=True)]
-)
 
 settings_path = os.path.join(my_directory, 'measurement_stats', 'settings.json')
 with open(settings_path, 'r+') as f:
@@ -53,8 +47,9 @@ def populate_extra_files():
 setup(
     name='measurement_stats',
     version=settings['version'],
-    description=
-            'Measurement statistics with uncertainties and error propagation',
+    description=(
+        'Measurement statistics with uncertainties and error propagation'
+    ),
     long_description=read_me(),
     url='https://github.com/sernst/Measurement_Statistics',
     author='Scott Ernst',
@@ -68,16 +63,14 @@ setup(
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
 
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
 
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'
     ],
-    ext_modules=cython_files,
     install_requires=[
         'pandas',
         'numpy',
@@ -85,6 +78,6 @@ setup(
         'scipy'
     ],
     test_suite='nose.collector',
-    tests_require=['nose', 'nose-cover3'],
+    tests_require=['pytest', 'pytest-cover'],
     keywords='measurements statistics uncertainty error propagation',
 )
